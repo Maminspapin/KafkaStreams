@@ -1,8 +1,8 @@
 package main;
 
+import org.apache.kafka.streams.KafkaStreams;
 import streams.EventStream;
 import streams.ResultStream;
-import org.apache.kafka.streams.KafkaStreams;
 
 public class StreamsStarter {
 

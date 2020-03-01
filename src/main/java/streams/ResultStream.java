@@ -10,20 +10,19 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
-import processors.CashProcessor;
+import processors.EventCashProcessor;
 import processors.FilterProcessor;
-import utils.Config;
+import config.AppConfig;
 
 import java.util.Properties;
 
-import static utils.Topics.EVENTS;
+import static config.Topics.EVENTS;
 
 public class ResultStream {
 
     public static KafkaStreams newStream() {
 
-        Properties properties = Config.getProperties("ResultStream");
-
+        Properties properties = AppConfig.getProperties("ResultStream");
         Serde<String> stringSerde = Serdes.String();
 
         StreamsBuilder builder = new StreamsBuilder();
@@ -38,7 +37,7 @@ public class ResultStream {
 
         KStream<String, String> resourceEventStream = builder.stream(EVENTS.topicName(), Consumed.with(stringSerde, stringSerde));
 
-        resourceEventStream.process(() -> new CashProcessor("inmemory"), "inmemory");
+        resourceEventStream.process(() -> new EventCashProcessor("inmemory"), "inmemory");
         resourceEventStream.process(() -> new FilterProcessor("inmemory"), "inmemory");
 
         Topology topology = builder.build();

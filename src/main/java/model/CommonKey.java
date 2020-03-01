@@ -8,9 +8,9 @@ public class CommonKey {
     public CommonKey() {
     }
 
-    public CommonKey(int category_id, int action_id) {
-        this.category_id = category_id;
+    public CommonKey(int action_id, int category_id) {
         this.action_id = action_id;
+        this.category_id = category_id;
     }
 
     public int getCategory_id() {
@@ -32,8 +32,8 @@ public class CommonKey {
     @Override
     public String toString() {
         return '{' +
-                "\"category_id\": " + category_id +
-                ", \"action_id\": " + action_id +
+                "\"action_id\": " + action_id +
+                ", \"category_id\": " + category_id +
                 '}';
     }
 }
