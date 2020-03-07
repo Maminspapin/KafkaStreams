@@ -3,7 +3,10 @@ package streams;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import config.AppConfig;
-import model.CommonKey;
+import executors.processors.ScenarioCashProcessor;
+import executors.transformers.EventKeyTransformer;
+import executors.transformers.JoinVisitScenarioTransformer;
+import model.JoinKey;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -11,14 +14,11 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
-import processors.ScenarioCashProcessor;
-import transformers.JoinVisitScenarioTransformer;
-import transformers.EventKeyTransformer;
+import utils.Utils;
 
 import java.util.Properties;
 
@@ -29,50 +29,52 @@ public class EventStream {
 
     public static KafkaStreams newStream() {
 
-        try {
-            Properties properties = AppConfig.getProperties("EventStream");
-            Serde<String> stringSerde = Serdes.String();
 
-            StreamsBuilder builder = new StreamsBuilder();
+        Properties properties = AppConfig.getStreamProperties("EventStream");
+        Serde<String> stringSerde = Serdes.String();
+        String storeName = "scenarioStore";
 
-            StoreBuilder<KeyValueStore<String, String>> store =
-                    Stores.keyValueStoreBuilder(
-                            Stores.inMemoryKeyValueStore("scenarioStore"),
-                            stringSerde,
-                            stringSerde
-                    );
-            builder.addStateStore(store);
+        StreamsBuilder builder = new StreamsBuilder();
 
-            KStream<GenericRecord, GenericRecord> resourceScenarioStream = builder.stream(MATOMO_SCENARIOS_DIRECTORY.topicName());
-            KStream<GenericRecord, String> resultScenarioStream = resourceScenarioStream.mapValues(record -> record.get("after").toString());
+        StoreBuilder<KeyValueStore<String, String>> store =
+                Stores.keyValueStoreBuilder(
+                        Stores.inMemoryKeyValueStore(storeName),
+                        stringSerde,
+                        stringSerde
+                );
+        builder.addStateStore(store);
 
-            resultScenarioStream.print(Printed.toSysOut());
+        KStream<GenericRecord, GenericRecord> resourceScenarioStream = builder.stream(MATOMO_SCENARIOS_DIRECTORY.topicName());
+        KStream<GenericRecord, String> resultScenarioStream = resourceScenarioStream.mapValues(record -> record.get("after").toString());
 
-            resultScenarioStream.process(() -> new ScenarioCashProcessor("scenarioStore"), "scenarioStore");
+        resultScenarioStream.process(() -> new ScenarioCashProcessor(storeName), storeName);
 
-            KStream<GenericRecord, GenericRecord> resourceLinkVisitActionStream = builder.stream(MATOMO_LOG_LINK_VISIT_ACTION.topicName());
-            KStream<GenericRecord, String> resultLinkVisitActionStream = resourceLinkVisitActionStream.mapValues(record -> record.get("after").toString());
+        KStream<GenericRecord, GenericRecord> resourceLinkVisitActionStream = builder.stream(MATOMO_LOG_LINK_VISIT_ACTION.topicName());
+        KStream<GenericRecord, String> resultLinkVisitActionStream = resourceLinkVisitActionStream.mapValues(record -> {
 
-            KStream<String, String> toJoinLinkVisitActionStream = resultLinkVisitActionStream.selectKey((key, value) -> {
+            JsonObject visitValueJson = Utils.getJsonObject(record.get("after").toString());
+            visitValueJson.addProperty("push_period", 0);
 
-                CommonKey commonKey = new CommonKey();
-                commonKey.setAction_id(new Gson().fromJson(value, JsonObject.class).get("action_id").getAsInt());
-                commonKey.setCategory_id(new Gson().fromJson(value, JsonObject.class).get("category_id").getAsInt());
+            return new Gson().toJson(visitValueJson);
+        });
 
-                return commonKey.toString();
-            });
+        KStream<String, String> toJoinLinkVisitActionStream = resultLinkVisitActionStream.selectKey((key, value) -> {
 
-            toJoinLinkVisitActionStream
-                    .transform(() -> new JoinVisitScenarioTransformer("scenarioStore"), "scenarioStore")
-                    .transform(EventKeyTransformer::new)
-                    .to("events", Produced.with(stringSerde, stringSerde));
+            JoinKey joinKey = new JoinKey();
+            JsonObject visitValueJson = Utils.getJsonObject(value);
+            joinKey.setAction_id(visitValueJson.get("action_id").getAsInt());
+            joinKey.setCategory_id(visitValueJson.get("category_id").getAsInt());
 
-            Topology topology = builder.build();
+            return joinKey.toString();
+        });
 
-            return new KafkaStreams(topology, properties);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        toJoinLinkVisitActionStream
+                .transform(() -> new JoinVisitScenarioTransformer(storeName), storeName)
+                .transform(EventKeyTransformer::new)
+                .to("events", Produced.with(stringSerde, stringSerde));
+
+        Topology topology = builder.build();
+
+        return new KafkaStreams(topology, properties);
     }
 }

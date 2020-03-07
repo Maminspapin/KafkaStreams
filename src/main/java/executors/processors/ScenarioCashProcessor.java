@@ -1,13 +1,17 @@
-package processors;
+package executors.processors;
 
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
 public class ScenarioCashProcessor implements Processor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioCashProcessor.class);
 
     private ProcessorContext context;
     private String scenarioStoreName;
@@ -22,7 +26,7 @@ public class ScenarioCashProcessor implements Processor {
         this.context = processorContext;
         scenarioStore = (KeyValueStore) processorContext.getStateStore(scenarioStoreName);
 
-        this.context.schedule(Duration.ofSeconds(15), PunctuationType.WALL_CLOCK_TIME, schedule -> scenarioStore.all().forEachRemaining(kv -> System.out.println("Scenario. Key: " + kv.key + ", Value: " + kv.value)));
+        this.context.schedule(Duration.ofMinutes(5), PunctuationType.WALL_CLOCK_TIME, schedule -> scenarioStore.all().forEachRemaining(kv -> LOGGER.info("Scenario. Key: " + kv.key + ", Value: " + kv.value)));
     }
 
     @Override

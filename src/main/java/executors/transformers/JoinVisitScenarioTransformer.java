@@ -1,11 +1,11 @@
-package transformers;
+package executors.transformers;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
+import utils.Utils;
 
 public class JoinVisitScenarioTransformer implements Transformer {
 
@@ -27,16 +27,21 @@ public class JoinVisitScenarioTransformer implements Transformer {
     public Object transform(Object key, Object value) {
 
         String result = value.toString();
-
         String scenario = scenarioStore.get(key.toString());
 
         if (scenario != null) {
-            String scenario_id = new Gson().fromJson(scenario, JsonObject.class).get("scenario_id").toString();
-            String description = new Gson().fromJson(scenario, JsonObject.class).get("description").toString();
-            result = result.replace("}", ", \"scenario_id\": " + scenario_id + ", \"description\": " + description + "}");
-            return new KeyValue<>(key.toString(), result);
+
+            JsonObject scenarioJson = Utils.getJsonObject(scenario);
+            int scenario_id = scenarioJson.get("scenario_id").getAsInt();
+            String description = scenarioJson.get("description").getAsString();
+
+            JsonObject resultJson = Utils.getJsonObject(result);
+            resultJson.addProperty("scenario_id", scenario_id);
+            resultJson.addProperty("description", description);
+
+            return new KeyValue<>(key.toString(), resultJson.toString());
         } else {
-            return new KeyValue<>(null, result);
+            return new KeyValue<>(key.toString(), result);
         }
     }
 

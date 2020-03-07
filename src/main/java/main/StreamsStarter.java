@@ -8,8 +8,6 @@ public class StreamsStarter {
 
     public static void main(String[] args) {
 
-        // TODO добавить логирование
-        // TODO добавить обработку исключений
         KafkaStreams eventStream = EventStream.newStream();
         KafkaStreams resultStream = ResultStream.newStream();
 

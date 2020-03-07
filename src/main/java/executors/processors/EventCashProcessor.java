@@ -1,12 +1,12 @@
-package processors;
+package executors.processors;
 
-import com.google.gson.Gson;
 import model.EventKey;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
+import utils.Utils;
 
 public class EventCashProcessor implements Processor {
 
@@ -27,24 +27,23 @@ public class EventCashProcessor implements Processor {
     @Override
     public void process(Object key, Object value) {
 
-        eventStore.put(key.toString(), value.toString()); // складываем в store
+        EventKey eventKey = Utils.getEventKey(key.toString());
 
-        EventKey eventKey = new Gson().fromJson(key.toString(), EventKey.class);
-        if (eventKey.getEvent_id() == 3) { // если событие - отменяющее, удаляем из store событие (1) по пользователю для отправки push
+        if (eventKey.getScenario_id() == 1) {
+            eventStore.put(key.toString(), value.toString());
+        }
+
+        if (eventKey.getScenario_id() == 3) {
             KeyValueIterator<String, String> iterator = eventStore.all();
             while (iterator.hasNext()) {
                 KeyValue<String, String> kv = iterator.next();
-                EventKey innerEventKey = new Gson().fromJson(kv.key, EventKey.class);
+                EventKey innerEventKey = Utils.getEventKey(kv.key);
 
-                if (innerEventKey.getUser_id() == eventKey.getUser_id() && innerEventKey.getEvent_id() == 1) {
+                if (innerEventKey.getUser_id() == eventKey.getUser_id() && innerEventKey.getScenario_id() == 1) {
                     eventStore.delete(kv.key);
                 }
             }
         }
-
-        eventStore.all().forEachRemaining(
-                kv -> System.out.println("EventCashProcessor, eventStore: " + kv.key + "; value: " + kv.value)
-        );
     }
 
     @Override

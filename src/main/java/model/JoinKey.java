@@ -1,14 +1,14 @@
 package model;
 
-public class CommonKey {
+public class JoinKey {
 
     int category_id;
     int action_id;
 
-    public CommonKey() {
+    public JoinKey() {
     }
 
-    public CommonKey(int action_id, int category_id) {
+    public JoinKey(int action_id, int category_id) {
         this.action_id = action_id;
         this.category_id = category_id;
     }
