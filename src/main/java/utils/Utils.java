@@ -3,31 +3,30 @@ package utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import model.EventKey;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-    public static Date getAfter (String server_time, long period) {
+    public static DateTime getAfter (String server_time, long period) {
 
+        long result = Long.valueOf(server_time) + period;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Date dateEvent = null;
         try {
-            dateEvent = formatter.parse(server_time);
-        } catch (ParseException e) {
+            String dateEvent = formatter.format(result);
+            return DateTime.parse(dateEvent);
+        } catch (Exception e) {
             LOGGER.error("Error while getting event date. ", e);
+            return null;
         }
-
-        return new Date(dateEvent.getTime() + period);
     }
 
     public static JsonObject getJsonObject(String str) {

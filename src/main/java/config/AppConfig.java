@@ -17,7 +17,7 @@ public class AppConfig {
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "172.17.188.49:9092");
         properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
         properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         properties.put("schema.registry.url", "http://172.17.188.49:8081");
 
         return properties;

@@ -28,18 +28,19 @@ public class EventCashProcessor implements Processor {
     public void process(Object key, Object value) {
 
         EventKey eventKey = Utils.getEventKey(key.toString());
+        int scenario_id = eventKey.getScenario_id();
 
-        if (eventKey.getScenario_id() == 1) {
+        if (scenario_id == 11) {
             eventStore.put(key.toString(), value.toString());
         }
 
-        if (eventKey.getScenario_id() == 3) {
+        if (scenario_id == 1100 || scenario_id == 1300) {
             KeyValueIterator<String, String> iterator = eventStore.all();
             while (iterator.hasNext()) {
                 KeyValue<String, String> kv = iterator.next();
                 EventKey innerEventKey = Utils.getEventKey(kv.key);
 
-                if (innerEventKey.getUser_id() == eventKey.getUser_id() && innerEventKey.getScenario_id() == 1) {
+                if (innerEventKey.getUser_id().equals(eventKey.getUser_id()) && innerEventKey.getScenario_id() == 11) {
                     eventStore.delete(kv.key);
                 }
             }

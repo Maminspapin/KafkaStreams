@@ -1,13 +1,21 @@
 package executors.transformers;
 
 import com.google.gson.JsonObject;
+import executors.processors.ScenarioCashProcessor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Utils;
 
+import java.time.Duration;
+
 public class JoinVisitScenarioTransformer implements Transformer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoinVisitScenarioTransformer.class);
 
     private ProcessorContext context;
     private String scenarioStoreName;
@@ -21,6 +29,8 @@ public class JoinVisitScenarioTransformer implements Transformer {
     public void init(ProcessorContext processorContext) {
         this.context = processorContext;
         scenarioStore = (KeyValueStore) processorContext.getStateStore(scenarioStoreName);
+
+        //this.context.schedule(Duration.ofSeconds(15), PunctuationType.WALL_CLOCK_TIME, schedule -> scenarioStore.all().forEachRemaining(kv -> LOGGER.info("Join. Key: " + kv.key + ", Value: " + kv.value)));
     }
 
     @Override
@@ -32,7 +42,7 @@ public class JoinVisitScenarioTransformer implements Transformer {
         if (scenario != null) {
 
             JsonObject scenarioJson = Utils.getJsonObject(scenario);
-            int scenario_id = scenarioJson.get("scenario_id").getAsInt();
+            int scenario_id = scenarioJson.get("id").getAsInt();
             String description = scenarioJson.get("description").getAsString();
 
             JsonObject resultJson = Utils.getJsonObject(result);

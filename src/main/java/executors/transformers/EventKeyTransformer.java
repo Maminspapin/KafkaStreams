@@ -23,12 +23,13 @@ public class EventKeyTransformer implements Transformer {
 
         JsonObject visitValueJson = Utils.getJsonObject(value.toString());
         EventKey eventKey = new EventKey();
-        int user_id = 0;
+        String user_id;
         int scenario_id = 0;
 
         try {
-            user_id = visitValueJson.get("user_id").getAsInt();
+            user_id = visitValueJson.get("user_id").getAsString();
         } catch (NullPointerException e) {
+            user_id = "unknown_user";
             LOGGER.info("No user detected...");
         }
 

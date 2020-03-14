@@ -2,23 +2,23 @@ package model;
 
 public class EventKey {
 
-    int user_id;
+    String user_id;
     int scenario_id;
 
     public EventKey() {
 
     }
 
-    public EventKey(int user_id, int scenario_id) {
+    public EventKey(String user_id, int scenario_id) {
         this.user_id = user_id;
         this.scenario_id = scenario_id;
     }
 
-    public int getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
 

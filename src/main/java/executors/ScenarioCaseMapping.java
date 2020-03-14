@@ -8,7 +8,7 @@ public class ScenarioCaseMapping {
     private static Map<Integer, String> scenarioMap = new HashMap<>();
 
     static {
-        scenarioMap.put(1, "SCENARIO_1");
+        scenarioMap.put(11, "SCENARIO_11");
         scenarioMap.put(2, "SCENARIO_2");
     }
 
