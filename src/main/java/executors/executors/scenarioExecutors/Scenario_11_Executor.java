@@ -1,8 +1,8 @@
-package executors.scenarioExecutors;
+package executors.executors.scenarioExecutors;
 
 import client.RecordProducer;
 import com.google.gson.JsonObject;
-import executors.ScenarioExecutor;
+import executors.action.ScenarioExecutor;
 import executors.processors.ResultFilterProcessor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -19,10 +19,10 @@ public class Scenario_11_Executor implements ScenarioExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultFilterProcessor.class);
 
     @Override
-    public void execute(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
+    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
 
         JsonObject eventValue = Utils.getJsonObject(kv.value);
-        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : Integer.valueOf(eventValue.get("push_period").toString());
+        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : eventValue.get("push_period").getAsInt();
         updatePushPeriod(push_period, kv.key, eventValue, store);
 
         DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsString(), push_period);
@@ -30,11 +30,6 @@ public class Scenario_11_Executor implements ScenarioExecutor {
 
         LOGGER.debug("now time: " + nowTime.toString());
         LOGGER.debug("push time: " + pushTime.toString());
-
-        if (pushTime == null) {
-            store.delete(kv.key);
-            return;
-        }
 
         if (nowTime.compareTo(pushTime) > 0) {
 
@@ -95,17 +90,4 @@ public class Scenario_11_Executor implements ScenarioExecutor {
         value.addProperty("scenario_id", scenario_id);
         store.put(key, value.toString());
     }
-
-//    private String getScenarioText(String subScenario) {
-//        try(InputStream input = new FileInputStream("C:\\Users\\LyulchenkoYN\\Texts\\texts.properties")) {
-//
-//            Properties properties = new Properties();
-//            properties.load(input);
-//
-//            return properties.getProperty(subScenario);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return "no text";
-//        }
-//    }
 }

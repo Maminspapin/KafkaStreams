@@ -1,7 +1,7 @@
 package executors.processors;
 
-import executors.Action;
-import executors.ScenarioCaseMapping;
+import executors.action.Action;
+import executors.action.ScenarioCaseMapping;
 import model.EventKey;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
@@ -61,7 +61,7 @@ public class ResultFilterProcessor implements Processor {
             String scenarioCase = ScenarioCaseMapping.getScenarioCase(scenario_id);
 
             if (scenarioCase != null) {
-                Action.valueOf(scenarioCase).execute(kv, eventStore);
+                Action.valueOf(scenarioCase).executeScenario(kv, eventStore);
             }
         }
     }

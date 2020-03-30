@@ -1,5 +1,5 @@
 # Project exclude paths
 /target/
 /.idea/
-/.idea/.name
 /cep.iml
+/.gitignore

@@ -1,10 +1,8 @@
 package main;
 
-import executors.ScenarioExecutor;
 import org.apache.kafka.streams.KafkaStreams;
 import streams.EventStream;
 import streams.ResultStream;
-import streams.ScenarioStream;
 
 public class StreamsStarter {
 

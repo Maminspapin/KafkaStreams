@@ -14,7 +14,7 @@ public class Utils {
 
     public static DateTime getPushTime(String server_time, long period) {
 
-        long result = Long.valueOf(server_time) + period;
+        long result = Long.parseLong(server_time) + period;
 
         try {
             return new DateTime(result, DateTimeZone.UTC);

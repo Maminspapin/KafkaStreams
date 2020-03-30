@@ -1,13 +1,13 @@
-package executors.scenarioExecutors;
+package executors.executors.scenarioExecutors;
 
-import executors.ScenarioExecutor;
+import executors.action.ScenarioExecutor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 public class Scenario_1100_Executor implements ScenarioExecutor {
 
     @Override
-    public void execute(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
+    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
         // do something, another logic
     }
 }
