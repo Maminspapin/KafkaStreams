@@ -12,11 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import static config.Topics.RESULTS;
 
 public class Scenario_11_Executor implements ScenarioExecutor {
@@ -27,35 +22,64 @@ public class Scenario_11_Executor implements ScenarioExecutor {
     public void execute(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
 
         JsonObject eventValue = Utils.getJsonObject(kv.value);
-        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_000 : Integer.valueOf(eventValue.get("push_period").toString());
+        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : Integer.valueOf(eventValue.get("push_period").toString());
         updatePushPeriod(push_period, kv.key, eventValue, store);
 
-        DateTime after = Utils.getAfter(eventValue.get("server_time").getAsString(), push_period);
-        DateTime now = new DateTime(DateTimeZone.UTC);
+        DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsString(), push_period);
+        DateTime nowTime = new DateTime(DateTimeZone.UTC);
 
-        if (after == null) {
+        LOGGER.debug("now time: " + nowTime.toString());
+        LOGGER.debug("push time: " + pushTime.toString());
+
+        if (pushTime == null) {
             store.delete(kv.key);
             return;
         }
 
-        if (now.compareTo(after) > 0) {
-            
-            LOGGER.info("now time: " + now.toString());
-            LOGGER.info("after time: " + after.toString());
+        if (nowTime.compareTo(pushTime) > 0) {
 
             switch (push_period) {
-                case(600_000):
-                    //eventValue.addProperty("text", getScenarioText("11"));
+                case(600_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(1_200_000, kv.key, eventValue, store);
+                    updatePushPeriod(1_200_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 13, store);
                     break;
-                case(1_200_000):
-                    //eventValue.addProperty("text", getScenarioText("12"));
+                case(1_200_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(1_800_000, kv.key, eventValue, store);
+                    updatePushPeriod(1_800_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 15, store);
+                    break;
+                case(1_800_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(2_400_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 17, store);
+                    break;
+                case(2_400_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(3_000_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 19, store);
+                    break;
+                case(3_000_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(3_600_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 111, store);
+                    break;
+                case(3_600_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(4_200_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 113, store);
+                    break;
+                case(4_200_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(4_800_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 115, store);
+                    break;
+                case(4_800_00):
+                    RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
+                    updatePushPeriod(5_400_00, kv.key, eventValue, store);
+                    updateScenarioId(kv.key, eventValue, 117, store);
                     break;
                 default:
-                    //eventValue.addProperty("text", getScenarioText("13"));
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
                     store.delete(kv.key);
             }
@@ -67,16 +91,21 @@ public class Scenario_11_Executor implements ScenarioExecutor {
         store.put(key, value.toString());
     }
 
-    private String getScenarioText(String subScenario) {
-        try(InputStream input = new FileInputStream("C:\\Users\\LyulchenkoYN\\Texts\\texts.properties")) {
-
-            Properties properties = new Properties();
-            properties.load(input);
-
-            return properties.getProperty(subScenario);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "no text";
-        }
+    private void updateScenarioId(String key, JsonObject value, int scenario_id,  KeyValueStore<String, String> store) {
+        value.addProperty("scenario_id", scenario_id);
+        store.put(key, value.toString());
     }
+
+//    private String getScenarioText(String subScenario) {
+//        try(InputStream input = new FileInputStream("C:\\Users\\LyulchenkoYN\\Texts\\texts.properties")) {
+//
+//            Properties properties = new Properties();
+//            properties.load(input);
+//
+//            return properties.getProperty(subScenario);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return "no text";
+//        }
+//    }
 }

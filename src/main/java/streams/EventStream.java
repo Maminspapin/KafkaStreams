@@ -64,13 +64,13 @@ public class EventStream {
             try {
                 idaction_event_action = visitValueJson.get("action_id").getAsInt();
             } catch (NullPointerException e) {
-                LOGGER.info("No action_id parameter detected...");
+                LOGGER.debug("No action_id parameter detected...");
             }
 
             try {
                 idaction_event_category = visitValueJson.get("category_id").getAsInt();
             } catch (NullPointerException e) {
-                LOGGER.info("No category_id parameter detected...");
+                LOGGER.debug("No category_id parameter detected...");
             }
 
             joinKey.setAction_id(idaction_event_action);
@@ -83,15 +83,20 @@ public class EventStream {
         toJoinScenarioStream.process(() -> new ScenarioCashProcessor(storeName), storeName);
 
 
-
         KStream<GenericRecord, GenericRecord> resourceLinkVisitActionStream = builder.stream(MATOMO_LOG_LINK_VISIT_ACTION.topicName());
+
         KStream<GenericRecord, String> resultLinkVisitActionStream = resourceLinkVisitActionStream.mapValues(record -> {
 
-            JsonObject visitValueJson = Utils.getJsonObject(record.get("after").toString());
-            visitValueJson.addProperty("push_period", 0);
-
-            return new Gson().toJson(visitValueJson);
+            try {
+                JsonObject visitValueJson = Utils.getJsonObject(record.get("after").toString());
+                visitValueJson.addProperty("push_period", 0);
+                return new Gson().toJson(visitValueJson);
+            } catch (Exception e) {
+                LOGGER.info("Error while getting data from " + MATOMO_LOG_LINK_VISIT_ACTION.topicName() + " topic. ", e);
+                return "UselessMessage";
+            }
         });
+
 
         KStream<String, String> toJoinLinkVisitActionStream = resultLinkVisitActionStream.selectKey((key, value) -> {
 
@@ -104,13 +109,13 @@ public class EventStream {
             try {
                 idaction_event_action = visitValueJson.get("idaction_event_action").getAsInt();
             } catch (NullPointerException e) {
-                LOGGER.info("No idaction_event_action parameter detected...");
+                LOGGER.debug("No idaction_event_action parameter detected...");
             }
 
             try {
                 idaction_event_category = visitValueJson.get("idaction_event_category").getAsInt();
             } catch (NullPointerException e) {
-                LOGGER.info("No idaction_event_category parameter detected...");
+                LOGGER.debug("No idaction_event_category parameter detected...");
             }
 
             joinKey.setAction_id(idaction_event_action);

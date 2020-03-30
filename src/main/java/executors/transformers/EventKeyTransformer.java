@@ -30,13 +30,13 @@ public class EventKeyTransformer implements Transformer {
             user_id = visitValueJson.get("user_id").getAsString();
         } catch (NullPointerException e) {
             user_id = "unknown_user";
-            LOGGER.info("No user detected...");
+            LOGGER.debug("No user detected...");
         }
 
         try {
             scenario_id = visitValueJson.get("scenario_id").getAsInt();
         } catch (NullPointerException e) {
-            LOGGER.info("No scenario detected...");
+            LOGGER.debug("No scenario detected...");
         }
 
         eventKey.setUser_id(user_id);
