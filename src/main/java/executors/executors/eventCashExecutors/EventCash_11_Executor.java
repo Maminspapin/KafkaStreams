@@ -1,6 +1,6 @@
 package executors.executors.eventCashExecutors;
 
-import executors.action.EventCashExecutor;
+import executors.actions.EventCashExecutor;
 import model.EventKey;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ public class EventCash_11_Executor implements EventCashExecutor {
     public void executeEventCash(Object key, Object value, KeyValueStore<String, String> eventStore) {
 
         EventKey eventKey = Utils.getEventKey(key.toString());
-        int scenario_id = eventKey.getScenario_id();
         String user_id = eventKey.getUser_id();
         boolean eventExist = eventStore.get(key.toString()) == null;
 

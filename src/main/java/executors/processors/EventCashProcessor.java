@@ -1,8 +1,7 @@
 package executors.processors;
 
-import executors.action.Action;
-import executors.action.ScenarioCaseMapping;
-import model.EventKey;
+import executors.actions.Action;
+import executors.actions.ScenarioCaseMapping;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;

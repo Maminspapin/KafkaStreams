@@ -1,4 +1,4 @@
-package executors.action;
+package executors.actions;
 
 import org.apache.kafka.streams.state.KeyValueStore;
 

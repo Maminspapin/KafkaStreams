@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;
 
-public class EventCash_1100_Executor implements EventCashExecutor {
+public class EventCash_21_Executor implements EventCashExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventCash_1100_Executor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventCash_21_Executor.class);
 
     @Override
     public void executeEventCash(Object key, Object value, KeyValueStore<String, String> eventStore) {
