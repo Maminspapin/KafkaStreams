@@ -12,12 +12,22 @@ public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
-    public static DateTime getPushTime(String server_time, long period) {
+    public static DateTime getPushTime(long server_time, long period) { // TODO поменять на long
 
-        long result = Long.parseLong(server_time) + period;
+        long result = server_time + period;
 
         try {
             return new DateTime(result, DateTimeZone.UTC);
+        } catch (Exception e) {
+            LOGGER.error("Error while getting event date. ", e);
+            return null;
+        }
+    }
+
+    public static DateTime getEventTime(Long server_time) {
+
+        try {
+            return new DateTime(server_time, DateTimeZone.UTC);
         } catch (Exception e) {
             LOGGER.error("Error while getting event date. ", e);
             return null;

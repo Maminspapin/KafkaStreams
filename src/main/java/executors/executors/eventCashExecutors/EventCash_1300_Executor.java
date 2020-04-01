@@ -19,7 +19,15 @@ public class EventCash_1300_Executor implements EventCashExecutor {
 
         LOGGER.info("Cancel event for [scenario 21]. Key: " + key.toString() + ", Value: " + value.toString());
 
-        EventKey scenario_1100_key = new EventKey(user_id, 21);
-        eventStore.delete(scenario_1100_key.toString());
+        EventKey scenario_21_key = new EventKey(user_id, 21);
+        eventStore.delete(scenario_21_key.toString());
+
+        EventKey scenario_2002_key = new EventKey(user_id, 2002);
+        eventStore.delete(scenario_2002_key.toString());
+
+        eventStore.put(key.toString(), value.toString()); // 2003, 2004
+
+        EventKey scenario_2005_key = new EventKey(user_id, 2005);
+        eventStore.delete(scenario_2005_key.toString());
     }
 }

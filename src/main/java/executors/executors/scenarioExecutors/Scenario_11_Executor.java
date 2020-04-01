@@ -16,22 +16,17 @@ import static config.Topics.RESULTS;
 
 public class Scenario_11_Executor implements ScenarioExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResultFilterProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Scenario_11_Executor.class);
 
     @Override
     public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
 
         JsonObject eventValue = Utils.getJsonObject(kv.value);
-        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : eventValue.get("push_period").getAsInt();
-        updatePushPeriod(push_period, kv.key, eventValue, store);
+        int push_period = getPushPeriod(eventValue, 600_00);
+        long server_time = eventValue.get("server_time").getAsLong();
+        updatePushPeriod(push_period, kv.key, eventValue, store); // TODO здесь и в подобных перевести в if
 
-        DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsString(), push_period);
-        DateTime nowTime = new DateTime(DateTimeZone.UTC);
-
-        LOGGER.debug("now time: " + nowTime.toString());
-        LOGGER.debug("push time: " + pushTime.toString());
-
-        if (nowTime.compareTo(pushTime) > 0) {
+        if (isPushTime(server_time, push_period)) {
 
             switch (push_period) {
                 case(600_00):
@@ -89,5 +84,19 @@ public class Scenario_11_Executor implements ScenarioExecutor {
     private void updateScenarioId(String key, JsonObject value, int scenario_id,  KeyValueStore<String, String> store) {
         value.addProperty("scenario_id", scenario_id);
         store.put(key, value.toString());
+    }
+
+    private boolean isPushTime(long eventTime, int push_period) { // TODO проверить и сделать везде
+        DateTime pushTime = Utils.getPushTime(eventTime, push_period);
+        DateTime nowTime = new DateTime(DateTimeZone.UTC);
+
+        LOGGER.debug("now time: " + nowTime.toString());
+        LOGGER.debug("push time: " + pushTime.toString());
+
+        return nowTime.compareTo(pushTime) > 0;
+    }
+
+    private int getPushPeriod(JsonObject value, int initialPushPeriod) { // TODO проверить и сделать везде
+        return value.get("push_period").getAsInt() == 0 ? initialPushPeriod : value.get("push_period").getAsInt();
     }
 }

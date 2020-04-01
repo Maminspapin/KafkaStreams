@@ -16,7 +16,7 @@ public class EventCash_11_Executor implements EventCashExecutor {
 
         EventKey eventKey = Utils.getEventKey(key.toString());
         String user_id = eventKey.getUser_id();
-        boolean eventExist = eventStore.get(key.toString()) == null;
+        boolean eventExist = eventStore.get(key.toString()) == null; // TODO проверить результат
 
         String custom_dimension_1 = "";
         try {

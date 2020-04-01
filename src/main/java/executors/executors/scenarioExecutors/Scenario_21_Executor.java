@@ -24,7 +24,7 @@ public class Scenario_21_Executor implements ScenarioExecutor {
         int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : eventValue.get("push_period").getAsInt();
         updatePushPeriod(push_period, kv.key, eventValue, store);
 
-        DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsString(), push_period);
+        DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsLong(), push_period);
         DateTime nowTime = new DateTime(DateTimeZone.UTC);
 
         LOGGER.debug("now time: " + nowTime.toString());
