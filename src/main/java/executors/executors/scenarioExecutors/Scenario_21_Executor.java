@@ -5,123 +5,103 @@ import com.google.gson.JsonObject;
 import executors.actions.ScenarioExecutor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 import static config.Topics.RESULTS;
 
 public class Scenario_21_Executor implements ScenarioExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Scenario_21_Executor.class);
-
     @Override
-    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
+    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> eventStore) {
 
-        JsonObject eventValue = Utils.getJsonObject(kv.value);
-        int push_period = eventValue.get("push_period").getAsInt() == 0 ? 600_00 : eventValue.get("push_period").getAsInt();
-        updatePushPeriod(push_period, kv.key, eventValue, store);
+        JsonObject eventValue = ExecutorHelper.getJsonObject(kv.value);
+        int push_period = ExecutorHelper.getPushPeriodFromEvent(eventValue, 600_00);
+        long server_time = eventValue.get("server_time").getAsLong();
 
-        DateTime pushTime = Utils.getPushTime(eventValue.get("server_time").getAsLong(), push_period);
-        DateTime nowTime = new DateTime(DateTimeZone.UTC);
+        if (ExecutorHelper.isPushTime(server_time, push_period)) {
 
-        LOGGER.debug("now time: " + nowTime.toString());
-        LOGGER.debug("push time: " + pushTime.toString());
-
-        if (nowTime.compareTo(pushTime) > 0) {
+            ExecutorHelper.updatePushPeriod(push_period, kv.key, eventValue, eventStore);
 
             switch (push_period) {
                 case (600_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(1_200_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 23, store);
+                    ExecutorHelper.updatePushPeriod(1_200_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(23, kv.key, eventValue, eventStore);
                     break;
                 case (1_200_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(1_800_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 25, store);
+                    ExecutorHelper.updatePushPeriod(1_800_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(25, kv.key, eventValue, eventStore);
                     break;
                 case (1_800_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(2_400_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 27, store);
+                    ExecutorHelper.updatePushPeriod(2_400_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(27, kv.key, eventValue, eventStore);
                     break;
                 case (2_400_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(3_000_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 29, store);
+                    ExecutorHelper.updatePushPeriod(3_000_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(29, kv.key, eventValue, eventStore);
                     break;
                 case (3_000_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(3_600_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 211, store);
+                    ExecutorHelper.updatePushPeriod(3_600_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(211, kv.key, eventValue, eventStore);
                     break;
                 case (3_600_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(4_200_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 213, store);
+                    ExecutorHelper.updatePushPeriod(4_200_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(213, kv.key, eventValue, eventStore);
                     break;
                 case (4_200_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(4_800_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 215, store);
+                    ExecutorHelper.updatePushPeriod(4_800_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(215, kv.key, eventValue, eventStore);
                     break;
                 case (4_800_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(5_400_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 217, store);
+                    ExecutorHelper.updatePushPeriod(5_400_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(217, kv.key, eventValue, eventStore);
                     break;
                 case (5_400_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(6_000_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 219, store);
+                    ExecutorHelper.updatePushPeriod(6_000_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(219, kv.key, eventValue, eventStore);
                     break;
                 case (6_000_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(6_600_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 221, store);
+                    ExecutorHelper.updatePushPeriod(6_600_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(221, kv.key, eventValue, eventStore);
                     break;
                 case (6_600_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(7_200_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 223, store);
+                    ExecutorHelper.updatePushPeriod(7_200_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(223, kv.key, eventValue, eventStore);
                     break;
                 case (7_200_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(7_800_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 225, store);
+                    ExecutorHelper.updatePushPeriod(7_800_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(225, kv.key, eventValue, eventStore);
                     break;
                 case (7_800_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(8_400_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 227, store);
+                    ExecutorHelper.updatePushPeriod(8_400_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(227, kv.key, eventValue, eventStore);
                     break;
                 case (8_400_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(9_000_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 229, store);
+                    ExecutorHelper.updatePushPeriod(9_000_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(229, kv.key, eventValue, eventStore);
                     break;
                 case (9_000_00):
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    updatePushPeriod(9_600_00, kv.key, eventValue, store);
-                    updateScenarioId(kv.key, eventValue, 231, store);
+                    ExecutorHelper.updatePushPeriod(9_600_00, kv.key, eventValue, eventStore);
+                    ExecutorHelper.updateScenarioId(231, kv.key, eventValue, eventStore);
                     break;
                 default:
                     RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-                    store.delete(kv.key);
+                    eventStore.delete(kv.key);
             }
         }
-    }
-
-    private void updatePushPeriod(int push_period, String key, JsonObject value, KeyValueStore<String, String> store) {
-        value.addProperty("push_period", push_period);
-        store.put(key, value.toString());
-    }
-
-    private void updateScenarioId(String key, JsonObject value, int scenario_id, KeyValueStore<String, String> store) {
-        value.addProperty("scenario_id", scenario_id);
-        store.put(key, value.toString());
     }
 }

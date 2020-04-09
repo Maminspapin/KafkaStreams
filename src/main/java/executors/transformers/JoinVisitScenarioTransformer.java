@@ -5,7 +5,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 public class JoinVisitScenarioTransformer implements Transformer {
 
@@ -32,12 +32,12 @@ public class JoinVisitScenarioTransformer implements Transformer {
 
         if (scenario != null) {
 
-            JsonObject scenarioJson = Utils.getJsonObject(scenario);
+            JsonObject scenarioJson = ExecutorHelper.getJsonObject(scenario);
             int scenario_directory_id = scenarioJson.get("scenarios_directory_id").getAsInt();
             int scenario_id = scenarioJson.get("id").getAsInt();
             String description = scenarioJson.get("description").getAsString();
 
-            JsonObject resultJson = Utils.getJsonObject(result);
+            JsonObject resultJson = ExecutorHelper.getJsonObject(result);
             resultJson.addProperty("scenarios_directory_id", scenario_directory_id);
             resultJson.addProperty("scenario_id", scenario_id);
             resultJson.addProperty("description", description);

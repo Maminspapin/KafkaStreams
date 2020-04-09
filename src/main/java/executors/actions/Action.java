@@ -9,7 +9,7 @@ public enum Action {
 
     SCENARIO_11(new Scenario_11_Executor(), new EventCash_11_Executor()),
     SCENARIO_21(new Scenario_21_Executor(), new EventCash_21_Executor()),
-    //SCENARIO_1100(new Scenario_1100_Executor(), new EventCash_1100_Executor()),
+    SCENARIO_1100(new Scenario_1100_Executor(), new EventCash_1100_Executor()),
     SCENARIO_1300(new Scenario_1300_Executor(), new EventCash_1300_Executor()),
     SCENARIO_1500(new Scenario_1500_Executor(), new EventCash_1500_Executor()),
     SCENARIO_2001(new Scenario_2001_Executor(), new EventCash_2001_Executor()),
@@ -35,8 +35,8 @@ public enum Action {
         scenarioExecutor.executeScenario(kv, store);
     }
 
-    public void executeEventCash(Object key, Object value, KeyValueStore<String, String> eventStore) {
-        eventCashExecutor.executeEventCash(key, value, eventStore);
+    public void executeEventCash(Object key, Object value, KeyValueStore<String, String> store) {
+        eventCashExecutor.executeEventCash(key, value, store);
     }
 
 }

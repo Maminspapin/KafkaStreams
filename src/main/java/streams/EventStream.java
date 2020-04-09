@@ -22,7 +22,7 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 import java.util.Properties;
 
@@ -56,7 +56,7 @@ public class EventStream {
         KStream<String, String> toJoinScenarioStream = resultScenarioStream.selectKey((key, value) -> {
 
             JoinKey joinKey = new JoinKey();
-            JsonObject visitValueJson = Utils.getJsonObject(value);
+            JsonObject visitValueJson = ExecutorHelper.getJsonObject(value);
 
             int idaction_event_action = 0;
             int idaction_event_category = 0;
@@ -88,7 +88,7 @@ public class EventStream {
         KStream<GenericRecord, String> resultLinkVisitActionStream = resourceLinkVisitActionStream.mapValues(record -> {
 
             try {
-                JsonObject visitValueJson = Utils.getJsonObject(record.get("after").toString());
+                JsonObject visitValueJson = ExecutorHelper.getJsonObject(record.get("after").toString());
                 visitValueJson.addProperty("push_period", 0);
                 return new Gson().toJson(visitValueJson);
             } catch (Exception e) {
@@ -101,7 +101,7 @@ public class EventStream {
         KStream<String, String> toJoinLinkVisitActionStream = resultLinkVisitActionStream.selectKey((key, value) -> {
 
             JoinKey joinKey = new JoinKey();
-            JsonObject visitValueJson = Utils.getJsonObject(value);
+            JsonObject visitValueJson = ExecutorHelper.getJsonObject(value);
 
             int idaction_event_action = 0;
             int idaction_event_category = 0;

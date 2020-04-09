@@ -7,7 +7,7 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 public class EventCashProcessor implements Processor {
 
@@ -30,7 +30,7 @@ public class EventCashProcessor implements Processor {
     @Override
     public void process(Object key, Object value) {
 
-        int scenario_id = Utils.getEventKey(key.toString()).getScenario_id();
+        int scenario_id = ExecutorHelper.getEventKey(key.toString()).getScenario_id();
         String scenarioCase = ScenarioCaseMapping.getScenarioCase(scenario_id);
 
         if (scenarioCase != null) {

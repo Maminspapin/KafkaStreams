@@ -7,7 +7,7 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 public class EventKeyTransformer implements Transformer {
 
@@ -21,7 +21,7 @@ public class EventKeyTransformer implements Transformer {
     @Override
     public Object transform(Object key, Object value) {
 
-        JsonObject visitValueJson = Utils.getJsonObject(value.toString());
+        JsonObject visitValueJson = ExecutorHelper.getJsonObject(value.toString());
         EventKey eventKey = new EventKey();
         String user_id;
         int scenario_id = 0;

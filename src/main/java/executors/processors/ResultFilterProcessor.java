@@ -11,7 +11,7 @@ import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 import java.time.Duration;
 
@@ -56,7 +56,7 @@ public class ResultFilterProcessor implements Processor {
         while (iterator.hasNext()) {
 
             KeyValue<String, String> kv = iterator.next();
-            EventKey eventKey = Utils.getEventKey(kv.key);
+            EventKey eventKey = ExecutorHelper.getEventKey(kv.key);
             int scenario_id = eventKey.getScenario_id();
             String scenarioCase = ScenarioCaseMapping.getScenarioCase(scenario_id);
 

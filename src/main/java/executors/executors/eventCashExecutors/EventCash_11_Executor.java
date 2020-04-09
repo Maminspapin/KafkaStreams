@@ -5,7 +5,7 @@ import model.EventKey;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 public class EventCash_11_Executor implements EventCashExecutor {
 
@@ -14,13 +14,13 @@ public class EventCash_11_Executor implements EventCashExecutor {
     @Override
     public void executeEventCash(Object key, Object value, KeyValueStore<String, String> eventStore) {
 
-        EventKey eventKey = Utils.getEventKey(key.toString());
+        EventKey eventKey = ExecutorHelper.getEventKey(key.toString());
         String user_id = eventKey.getUser_id();
-        boolean eventExist = eventStore.get(key.toString()) == null; // TODO проверить результат
+        boolean eventExist = eventStore.get(key.toString()) == null; // TODO проверить результат, тут что-то не так
 
         String custom_dimension_1 = "";
         try {
-            custom_dimension_1 = Utils.getJsonObject(value.toString()).get("custom_dimension_1").getAsString();
+            custom_dimension_1 = ExecutorHelper.getJsonObject(value.toString()).get("custom_dimension_1").getAsString();
         } catch (NullPointerException e) {
             LOGGER.debug("Can't get parameter custom_dimension_1 from event.");
         }

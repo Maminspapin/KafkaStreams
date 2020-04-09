@@ -5,7 +5,7 @@ import model.EventKey;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 public class EventCash_20032_Executor implements EventCashExecutor {
 
@@ -14,7 +14,7 @@ public class EventCash_20032_Executor implements EventCashExecutor {
     @Override
     public void executeEventCash(Object key, Object value, KeyValueStore<String, String> eventStore) {
 
-        EventKey eventKey = Utils.getEventKey(key.toString());
+        EventKey eventKey = ExecutorHelper.getEventKey(key.toString());
         String user_id = eventKey.getUser_id();
 
         LOGGER.info("Cancel event for [scenario 2003]. Key: " + key.toString() + ", Value: " + value.toString());

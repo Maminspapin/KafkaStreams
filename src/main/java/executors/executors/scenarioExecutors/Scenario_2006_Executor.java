@@ -5,17 +5,17 @@ import com.google.gson.JsonObject;
 import executors.actions.ScenarioExecutor;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueStore;
-import utils.Utils;
+import executors.helper.ExecutorHelper;
 
 import static config.Topics.RESULTS;
 
 public class Scenario_2006_Executor implements ScenarioExecutor {
 
     @Override
-    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
+    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> eventStore) {
 
-        JsonObject eventValue = Utils.getJsonObject(kv.value);
+        JsonObject eventValue = ExecutorHelper.getJsonObject(kv.value);
         RecordProducer.sendRecord(RESULTS.topicName(), kv.key, eventValue.toString());
-        store.delete(kv.key);
+        eventStore.delete(kv.key);
     }
 }

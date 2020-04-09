@@ -7,7 +7,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class Scenario_2010_Executor implements ScenarioExecutor {
 
     @Override
-    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> store) {
+    public void executeScenario(KeyValue<String, String> kv, KeyValueStore<String, String> eventStore) {
 
     }
 }
